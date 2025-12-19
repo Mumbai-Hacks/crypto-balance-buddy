@@ -1,73 +1,67 @@
-# Welcome to your Lovable project
+# 🚀 My Portfolio Website
 
-## Project info
+Welcome to the repository for my personal portfolio website! This is where I showcase my skills, projects, and a bit of my personality through jaw-dropping 3D animations, slick interactions, and fluid motion. If you're into creative web design, you're in the right place.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+![Portfolio Preview](https://github.com/Raahil-08/My_Portfolio/blob/67cd18c3f42bed05abbae047ec0e5fd703e91d21/public/assets/projects-screenshots/portfolio/landing.png)
 
-## How can I edit this code?
+## 🔥 Features
 
-There are several ways of editing your application.
+- **3D Animations**: Custom-made interactive keyboard using Spline with skills as keycaps that reveal titles and descriptions on hover.
+- **Slick Interactions**: Powered by GSAP and Framer Motion for smooth animations on scroll, hover, and element reveal.
+- **Space Theme**: Particles on a dark background to simulate a cosmic environment, making the experience out of this world.
+- **Responsive Design**: Fully responsive across all devices to ensure the best user experience.
+- **Innovative Web Design**: Combining creativity with functionality to push the boundaries of modern web design.
 
-**Use Lovable**
+## 🛠️ Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **Frontend**: Next.js, React, Tailwind CSS, Shadcn, Aceternity UI
+- **Animations**: GSAP, Framer Motion, Spline Runtime
+- **Misc**: Resend, Socketio, Zod
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v14+)
+- npm or yarn
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+1. Clone the repository:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+    ```bash
+    git clone https://github.com/Naresh-Khatri/Portfolio.git
+    ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. Navigate to the project directory:
 
-# Step 3: Install the necessary dependencies.
-npm i
+    ```bash
+    cd Portfolio
+    ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+3. Install dependencies:
 
-**Edit a file directly in GitHub**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+4. Run the development server:
 
-**Use GitHub Codespaces**
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the magic!
 
-## What technologies are used for this project?
+## 🚀 Deployment
 
-This project is built with:
+This site is deployed on Vercel. For your own deployment, follow these steps:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Push your code to a GitHub repository.
+2. Connect your repository to Vercel.
+3. Vercel will handle the deployment process.
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

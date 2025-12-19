@@ -22,11 +22,7 @@ import NotFound from "@/pages/NotFound";
 function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        disableTransitionOnChange
-      >
+      <ThemeProvider defaultTheme="dark">
         <Particles
           className="fixed inset-0 -z-10 animate-fade-in"
           quantity={100}

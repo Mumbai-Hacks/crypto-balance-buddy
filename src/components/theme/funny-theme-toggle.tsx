@@ -1,8 +1,6 @@
-"use client";
-
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme-provider";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -61,7 +59,6 @@ export default function FunnyThemeToggle({
             </Button>
           </PopoverTrigger>
           <PopoverContent className="z-[99999] flex flex-col items-center gap-2">
-            {/* <p className="text-sm">these stunts are done by professional only</p> */}
             <p className="text-sm text-center">{themeDisclaimers.light[counter.light]}</p>
             <Button onClick={goLight}>Go Light</Button>
           </PopoverContent>

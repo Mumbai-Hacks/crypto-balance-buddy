@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import React from "react";
 import { Button } from "../ui/button";
 import { File, Github, Linkedin } from "lucide-react";
@@ -81,11 +81,10 @@ const HeroSection = () => {
                 </BlurIn>
               </div>
               <div className="mt-8 md:ml-2 flex flex-col gap-3">
-                <Link
-                  href={
-                    "https://drive.google.com/file/d/1O97WCk2DrO9x6SHOqf7LvRbmHkMgGIb4/view?usp=sharing"
-                  }
+                <a
+                  href="https://drive.google.com/file/d/1O97WCk2DrO9x6SHOqf7LvRbmHkMgGIb4/view?usp=sharing"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="flex-1"
                 >
                   <BoxReveal delay={2} width="100%" >
@@ -94,39 +93,33 @@ const HeroSection = () => {
                       <p>Resume</p>
                     </Button>
                   </BoxReveal>
-                </Link>
+                </a>
                 <div className="md:self-start flex gap-3">
                   <Tooltip delayDuration={300}>
                     <TooltipTrigger asChild>
-                      <Link href={"#contact"}>
+                      <a href="#contact">
                         <Button
                           variant={"outline"}
                           className="block w-full overflow-hidden"
                         >
                           Hire Me
                         </Button>
-                      </Link>
+                      </a>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
                       <p>pls 🥹 🙏</p>
                     </TooltipContent>
                   </Tooltip>
-                  <Link
-                    href={config.social.github}
-                    target="_blank"
-                  >
+                  <a href={config.social.github} target="_blank" rel="noopener noreferrer">
                     <Button variant={"outline"}>
                       <SiGithub size={24} />
                     </Button>
-                  </Link>
-                  <Link
-                    href={config.social.linkedin}
-                    target="_blank"
-                  >
+                  </a>
+                  <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer">
                     <Button variant={"outline"}>
                       <SiLinkedin size={24} />
                     </Button>
-                  </Link>
+                  </a>
                 </div>
               </div>
             </>

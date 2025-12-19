@@ -1,7 +1,6 @@
-"use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import styles from "./style.module.scss";
 import { opacity, background } from "./anim";
 import Nav from "./nav";
@@ -47,7 +46,7 @@ const Header = ({ loader }: HeaderProps) => {
       >
       </div> */}
       <div className={cn(styles.bar, "flex items-center justify-between")}>
-        <Link href="/" className="flex items-center justify-center">
+        <Link to="/" className="flex items-center justify-center">
           <Button variant={"link"} className="text-md">
             {config.author}
           </Button>

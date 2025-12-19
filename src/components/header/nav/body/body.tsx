@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import styles from "./style.module.scss";
 import { blur, translate } from "../../anim";
 import { Link as LinkType } from "@/types";
 import { cn } from "@/lib/utils";
-import { useParams } from "next/navigation";
+import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 interface SelectedLink {
@@ -25,13 +25,13 @@ export default function Body({
   setSelectedLink,
   setIsActive,
 }: BodyProps) {
-  const params = useParams();
+  const location = useLocation();
   const [currentHref, setCurrentHref] = useState("/");
   useEffect(() => {
     if (typeof window === "undefined") return;
     const { pathname, hash } = window.location;
     setCurrentHref(pathname + hash);
-  }, [params]);
+  }, [location]);
 
   const getChars = (word: string) => {
     let chars: JSX.Element[] = [];
@@ -61,7 +61,7 @@ export default function Body({
         return (
           <Link
             key={`l_${index}`}
-            href={href}
+            to={href}
             target={target}
             className="cursor-can-hover rounded-lg"
           >

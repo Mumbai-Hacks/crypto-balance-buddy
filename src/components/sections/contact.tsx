@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import {
   Card,
@@ -9,13 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ContactForm from "../ContactForm";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { config } from "@/data/config";
 const ContactSection = () => {
   return (
     <section id="contact" className="min-h-screen max-w-7xl mx-auto ">
-      <Link href={"#contact"}>
+      <a href="#contact">
         <h2
           className={cn(
             "bg-clip-text text-4xl text-center text-transparent md:text-7xl pt-16",
@@ -26,7 +24,7 @@ const ContactSection = () => {
           LET&apos;S WORK <br />
           TOGETHER
         </h2>
-      </Link>
+      </a>
       <div className="grid grid-cols-1 md:grid-cols-2 z-[9999]">
         <Card className="min-w-7xl bg-white/70 dark:bg-black/70 backdrop-blur-sm rounded-xl mt-10 md:mt-20">
           <CardHeader>

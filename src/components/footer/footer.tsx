@@ -1,5 +1,5 @@
 import React from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { footer } from "./config";
 import { Button } from "../ui/button";
 import SocialMediaButtons from "../social/social-media-icons";
@@ -20,7 +20,7 @@ function Footer() {
           return (
             <Link
               className="text-xs underline-offset-4 hover:underline"
-              href={href}
+              to={href}
               key={`l_${index}`}
             >
               <Button variant={"link"}>{title}</Button>

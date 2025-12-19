@@ -1,4 +1,3 @@
-"use client";
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Application, SPEObject, SplineEvent } from "@splinetool/runtime";
 import gsap from "gsap";
@@ -9,7 +8,6 @@ import { sleep } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { usePreloader } from "./preloader";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -282,11 +280,10 @@ const AnimatedBackground = () => {
   }, [activeSection, splineApp]);
 
   const [keyboardRevealed, setKeyboardRevealed] = useState(false);
-  const router = useRouter();
   //reveal keycaps
   useEffect(() => {
     const hash = activeSection === "hero" ? "#" : `#${activeSection}`;
-    router.push("/" + hash, { scroll: false });
+    window.history.replaceState(null, "", "/" + hash);
     if (!splineApp || isLoading || keyboardRevealed) return;
     revealKeyCaps();
   }, [splineApp, isLoading, activeSection]);

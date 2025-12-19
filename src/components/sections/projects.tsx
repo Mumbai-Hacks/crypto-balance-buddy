@@ -1,5 +1,3 @@
-"use client";
-import Image from "next/image";
 import React from "react";
 import {
   Modal,
@@ -9,7 +7,9 @@ import {
   ModalTrigger,
 } from "../ui/animated-modal";
 import { FloatingDock } from "../ui/floating-dock";
-import Link from "next/link";
+
+import SmoothScroll from "../smooth-scroll";
+import projects, { Project } from "@/data/projects";
 
 import SmoothScroll from "../smooth-scroll";
 import projects, { Project } from "@/data/projects";
@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 const ProjectsSection = () => {
   return (
     <section id="projects" className="max-w-7xl mx-auto md:h-[130vh]">
-      <Link href={"#projects"}>
+      <a href="#projects">
         <h2
           className={cn(
             "bg-clip-text text-4xl text-center text-transparent md:text-7xl pt-16",
@@ -28,7 +28,7 @@ const ProjectsSection = () => {
         >
           Projects
         </h2>
-      </Link>
+      </a>
       <div className="grid grid-cols-1 md:grid-cols-3">
         {projects.map((project, index) => (
           <Modall key={project.src} project={project} />
@@ -46,12 +46,10 @@ const Modall = ({ project }: { project: Project }) => {
             className="relative w-[400px] h-auto rounded-lg overflow-hidden"
             style={{ aspectRatio: "3/2" }}
           >
-            <Image
-              className="absolute w-full h-full top-0 left-0 hover:scale-[1.05] transition-all"
+            <img
+              className="absolute w-full h-full top-0 left-0 hover:scale-[1.05] transition-all object-cover"
               src={project.src}
               alt={project.title}
-              width={300}
-              height={300}
             />
             <div className="absolute w-full h-1/2 bottom-0 left-0 bg-gradient-to-t from-black via-black/85 to-transparent pointer-events-none">
               <div className="flex flex-col h-full items-start justify-end p-6">
@@ -73,11 +71,11 @@ const Modall = ({ project }: { project: Project }) => {
             <button className="px-2 py-1 bg-gray-200 text-black dark:bg-black dark:border-black dark:text-white border border-gray-300 rounded-md text-sm w-28">
               Cancel
             </button>
-            <Link href={project.live} target="_blank">
+            <a href={project.live} target="_blank" rel="noopener noreferrer">
               <button className="bg-black text-white dark:bg-white dark:text-black text-sm px-2 py-1 rounded-md border border-black w-28">
                 Visit
               </button>
-            </Link>
+            </a>
           </ModalFooter>
         </ModalBody>
       </Modal>

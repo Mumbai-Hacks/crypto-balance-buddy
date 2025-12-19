@@ -7,10 +7,6 @@ import {
   ModalTrigger,
 } from "../ui/animated-modal";
 import { FloatingDock } from "../ui/floating-dock";
-
-import SmoothScroll from "../smooth-scroll";
-import projects, { Project } from "@/data/projects";
-
 import SmoothScroll from "../smooth-scroll";
 import projects, { Project } from "@/data/projects";
 import { cn } from "@/lib/utils";

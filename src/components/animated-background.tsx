@@ -1,9 +1,8 @@
-import React, { useState, Suspense } from "react";
+import React, { useState } from "react";
 import { usePreloader } from "./preloader";
 import { useTheme } from "@/components/theme-provider";
 import { Skill } from "@/data/constants";
-
-const Keyboard3D = React.lazy(() => import("./keyboard-3d"));
+import Keyboard3D from "./keyboard-3d";
 
 const AnimatedBackground = () => {
   const { bypassLoading } = usePreloader();
@@ -25,9 +24,7 @@ const AnimatedBackground = () => {
     >
       {/* 3D Keyboard */}
       <div className="absolute inset-0">
-        <Suspense fallback={<div className="w-full h-full" />}>
-          <Keyboard3D onSkillHover={setHoveredSkill} />
-        </Suspense>
+        <Keyboard3D onSkillHover={setHoveredSkill} />
       </div>
 
       {/* Skill info overlay */}

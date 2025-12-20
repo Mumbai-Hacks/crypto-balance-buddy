@@ -114,6 +114,7 @@ const AnimatedBackground = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const splineContainer = useRef<HTMLDivElement>(null);
   const [splineApp, setSplineApp] = useState<Application>();
+  const [splineError, setSplineError] = useState(false);
 
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [activeSection, setActiveSection] = useState<Section>("hero");
@@ -556,14 +557,35 @@ const AnimatedBackground = () => {
     };
     return { start, stop };
   };
+  // Handle spline load error gracefully
+  useEffect(() => {
+    if (splineError) {
+      bypassLoading();
+    }
+  }, [splineError, bypassLoading]);
+
+  if (splineError) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="text-center text-white/50">
+          <p className="text-sm">3D Background unavailable</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />}>
         <Spline
           ref={splineContainer}
           onLoad={(app: Application) => {
             setSplineApp(app);
             bypassLoading();
+          }}
+          onError={() => {
+            console.warn("Spline scene failed to load");
+            setSplineError(true);
           }}
           scene="/assets/skills-keyboard.spline"
         />

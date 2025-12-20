@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 import "@splidejs/react-splide/css";
 
-import Image from "next/image";
+
 import {
   Dialog,
   DialogContent,
@@ -40,11 +40,9 @@ const SlideShow = ({ images }: { images: string[] }) => {
                 onMouseEnter={() => setHovering(true)}
                 onMouseLeave={() => setHovering(false)}
               >
-                <Image
+                <img
                   src={image}
                   alt="screenshot"
-                  width={1000}
-                  height={1000}
                   className="w-full rounded-lg h-auto"
                 />
                 <AnimatePresence>
@@ -67,11 +65,9 @@ const SlideShow = ({ images }: { images: string[] }) => {
                     {image.split("/").pop()}
                   </DialogDescription>
                 </DialogHeader>
-                <Image
+                <img
                   src={image}
                   alt="screenshot"
-                  width={1000}
-                  height={1000}
                   className="w-full"
                   style={{ objectFit: "contain", width: "100vw" }}
                 />

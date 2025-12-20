@@ -1,12 +1,8 @@
-"use client";
-
 import { useInView } from "framer-motion";
 import React, { useRef } from "react";
 import { Button } from "../ui/button";
 import { SiGithub, SiInstagram, SiLinkedin, SiTwitter } from "react-icons/si";
-import { Linkedin } from "lucide-react";
 import { config } from "@/data/config";
-import Link from "next/link";
 
 const BUTTONS = [
   {
@@ -38,9 +34,9 @@ const SocialMediaButtons = () => {
     <div ref={ref} className="z-10">
       {show &&
         BUTTONS.map((button) => (
-          <Link href={button.href} key={button.name} target="_blank">
+          <a href={button.href} key={button.name} target="_blank" rel="noopener noreferrer">
             <Button variant={"ghost"}>{button.icon}</Button>
-          </Link>
+          </a>
         ))}
     </div>
   );

@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import styles from "./style.module.scss";
 import { opacity } from "../../anim";
 import { cn } from "@/lib/utils";
@@ -18,13 +17,10 @@ const Index: React.FC<IndexProps> = ({ src, isActive }) => {
       animate={isActive ? "open" : "closed"}
       className={styles.imageContainer}
     >
-      <Image
+      <img
         src={src}
-        width={400}
-        height={400}
         className="my-32 w-full h-auto object-cover"
-        alt={"Image"}
-        // priority={true}
+        alt="Image"
       />
     </motion.div>
   );

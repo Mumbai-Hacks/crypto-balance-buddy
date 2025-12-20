@@ -1,13 +1,12 @@
-"use client";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Label } from "./ui/label";
 import { Input } from "./ui/ace-input";
 import { Textarea } from "./ui/ace-textarea";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/use-toast";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
 
 const ContactForm = () => {
   const [fullName, setFullName] = React.useState("");
@@ -16,7 +15,7 @@ const ContactForm = () => {
   const [loading, setLoading] = React.useState(false);
 
   const { toast } = useToast();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +45,7 @@ const ContactForm = () => {
       setEmail("");
       setMessage("");
       const timer = setTimeout(() => {
-        router.push("/");
+        navigate("/");
         clearTimeout(timer);
       }, 1000);
     } catch (err) {

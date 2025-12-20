@@ -8,7 +8,6 @@ import { sleep } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { usePreloader } from "./preloader";
 import { useTheme } from "@/components/theme-provider";
-import SplineErrorBoundary from "./spline-error-boundary";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -575,26 +574,23 @@ const AnimatedBackground = () => {
     );
   }
 
-  const fallbackUI = (
-    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
-  );
-
   return (
-    <SplineErrorBoundary 
-      fallback={fallbackUI}
-      onError={() => setSplineError(true)}
-    >
-      <Suspense fallback={fallbackUI}>
+    <>
+      <Suspense fallback={<div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />}>
         <Spline
           ref={splineContainer}
           onLoad={(app: Application) => {
             setSplineApp(app);
             bypassLoading();
           }}
+          onError={() => {
+            console.warn("Spline scene failed to load");
+            setSplineError(true);
+          }}
           scene="/assets/skills-keyboard.spline"
         />
       </Suspense>
-    </SplineErrorBoundary>
+    </>
   );
 };
 

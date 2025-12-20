@@ -1,8 +1,8 @@
 import React, { useRef, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Text, Float, PerspectiveCamera } from "@react-three/drei";
+import { Float, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
-import { SKILLS, SkillNames, Skill } from "@/data/constants";
+import { SKILLS, Skill } from "@/data/constants";
 
 interface KeycapProps {
   position: [number, number, number];
@@ -17,7 +17,7 @@ const Keycap: React.FC<KeycapProps> = ({ position, skill, onHover }) => {
   useFrame((state) => {
     if (meshRef.current) {
       if (hovered) {
-        meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 4) * 0.05 + 0.1;
+        meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 4) * 0.05 + 0.15;
       } else {
         meshRef.current.position.y = THREE.MathUtils.lerp(
           meshRef.current.position.y,
@@ -44,25 +44,14 @@ const Keycap: React.FC<KeycapProps> = ({ position, skill, onHover }) => {
         document.body.style.cursor = "default";
       }}
     >
-      <boxGeometry args={[0.9, 0.4, 0.9]} />
+      <boxGeometry args={[0.85, 0.35, 0.85]} />
       <meshStandardMaterial
         color={hovered ? skill.color : "#2a2a3a"}
-        emissive={hovered ? skill.color : "#000000"}
-        emissiveIntensity={hovered ? 0.3 : 0}
-        metalness={0.3}
-        roughness={0.4}
+        emissive={hovered ? skill.color : "#1a1a2a"}
+        emissiveIntensity={hovered ? 0.4 : 0.05}
+        metalness={0.4}
+        roughness={0.3}
       />
-      <Text
-        position={[0, 0.21, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.2}
-        color={hovered ? "#ffffff" : "#888888"}
-        anchorX="center"
-        anchorY="middle"
-        font="/fonts/inter.woff"
-      >
-        {skill.label.substring(0, 3).toUpperCase()}
-      </Text>
     </mesh>
   );
 };
@@ -83,9 +72,9 @@ const Keyboard: React.FC<KeyboardProps> = ({ onSkillHover }) => {
     
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
-        const x = (col - (cols - 1) / 2) * 1;
-        const z = (row - (rows - 1) / 2) * 1;
-        positions.push([x, 0, z]);
+        const x = (col - (cols - 1) / 2) * 0.95;
+        const z = (row - (rows - 1) / 2) * 0.95;
+        positions.push([x, 0.2, z]);
       }
     }
     return positions;
@@ -93,17 +82,27 @@ const Keyboard: React.FC<KeyboardProps> = ({ onSkillHover }) => {
 
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
-      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.05 - 0.3;
+      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.15;
+      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.05 - 0.4;
     }
   });
 
   return (
-    <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
+    <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.3}>
       <group ref={groupRef}>
         {/* Keyboard base */}
-        <mesh position={[0, -0.3, 0]}>
-          <boxGeometry args={[7, 0.3, 5]} />
+        <mesh position={[0, -0.1, 0]}>
+          <boxGeometry args={[6.5, 0.3, 4.5]} />
+          <meshStandardMaterial 
+            color="#121220" 
+            metalness={0.6} 
+            roughness={0.2}
+          />
+        </mesh>
+        
+        {/* Keyboard rim */}
+        <mesh position={[0, 0.05, 0]}>
+          <boxGeometry args={[6.2, 0.1, 4.2]} />
           <meshStandardMaterial 
             color="#1a1a2e" 
             metalness={0.5} 
@@ -115,7 +114,7 @@ const Keyboard: React.FC<KeyboardProps> = ({ onSkillHover }) => {
         {skillsArray.map((skill, index) => (
           <Keycap
             key={skill.name}
-            position={keyPositions[index] || [0, 0, 0]}
+            position={keyPositions[index] || [0, 0.2, 0]}
             skill={skill}
             onHover={onSkillHover}
           />
@@ -139,15 +138,16 @@ const Keyboard3D: React.FC<Keyboard3DProps> = ({ onSkillHover }) => {
       style={{ background: "transparent" }}
       gl={{ alpha: true, antialias: true }}
     >
-      <PerspectiveCamera makeDefault position={[0, 3, 8]} fov={50} />
-      <ambientLight intensity={0.4} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, 5, -10]} intensity={0.5} color="#8b5cf6" />
+      <PerspectiveCamera makeDefault position={[0, 4, 8]} fov={45} />
+      <ambientLight intensity={0.3} />
+      <pointLight position={[10, 10, 10]} intensity={0.8} />
+      <pointLight position={[-10, 5, -10]} intensity={0.4} color="#8b5cf6" />
+      <pointLight position={[0, -5, 5]} intensity={0.3} color="#3b82f6" />
       <spotLight
-        position={[0, 10, 0]}
-        angle={0.3}
+        position={[0, 15, 0]}
+        angle={0.4}
         penumbra={1}
-        intensity={1}
+        intensity={0.6}
         color="#ffffff"
       />
       <Keyboard onSkillHover={handleSkillHover} />

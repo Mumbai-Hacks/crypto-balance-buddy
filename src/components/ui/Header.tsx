@@ -1,8 +1,5 @@
-"use client";
-
-import Link from "next/link";
 import React from "react";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 
 const LINKS = [
   { name: "Projects", href: "/projects" },
@@ -12,12 +9,13 @@ const LINKS = [
 ];
 
 const Header = () => {
-  const activeRoute = usePathname();
+  const location = useLocation();
+  const activeRoute = location.pathname;
   return (
     <div className="w-screen flex justify-center items-center h-[60px] container-xl mx-auto px-4 absolute top-0">
       {activeRoute !== "/" && (
         <Link
-          href={"/"}
+          to="/"
           className="p-4 absolute top-0 left-2 text-sm duration-500 hover:text-zinc-300"
         >
           Home
@@ -27,7 +25,7 @@ const Header = () => {
         {LINKS.map((link) => (
           <Link
             key={link.href}
-            href={link.href}
+            to={link.href}
             className={`p-4 text-sm duration-500 text-zinc-500 hover:text-zinc-300 ${
               activeRoute === link.href ? "text-zinc-200" : ""
             }`}

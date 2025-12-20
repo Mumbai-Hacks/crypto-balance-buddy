@@ -1,6 +1,3 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 // @ts-ignore
 import { Splide, SplideSlide } from "@splidejs/react-splide";
@@ -88,12 +85,10 @@ function Page() {
                 >
                   {project.images.map((image) => (
                     <SplideSlide key={image}>
-                      <Image
+                      <img
                         src={image}
                         alt={`screenshot of "${project.name}`}
-                        className="w-[300px] h-[200px] rounded-md bg-zinc-900 "
-                        width={300}
-                        height={400}
+                        className="w-[300px] h-[200px] rounded-md bg-zinc-900"
                         style={{ height: "200px" }}
                       />
                     </SplideSlide>

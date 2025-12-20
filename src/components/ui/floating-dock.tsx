@@ -15,7 +15,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import Link from "next/link";
+
 import { useEffect, useRef, useState } from "react";
 import { opacity } from "../header/anim";
 

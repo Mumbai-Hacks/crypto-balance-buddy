@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, Suspense } from "react";
 import { usePreloader } from "./preloader";
 import { useTheme } from "@/components/theme-provider";
+import { Skill } from "@/data/constants";
+
+const Keyboard3D = React.lazy(() => import("./keyboard-3d"));
 
 const AnimatedBackground = () => {
   const { bypassLoading } = usePreloader();
   const { theme } = useTheme();
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; size: number; duration: number; delay: number }>>([]);
+  const [hoveredSkill, setHoveredSkill] = useState<Skill | null>(null);
 
-  useEffect(() => {
-    // Generate random particles
-    const newParticles = Array.from({ length: 50 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 4 + 1,
-      duration: Math.random() * 20 + 10,
-      delay: Math.random() * 5,
-    }));
-    setParticles(newParticles);
+  React.useEffect(() => {
     bypassLoading();
   }, [bypassLoading]);
 
@@ -30,28 +23,40 @@ const AnimatedBackground = () => {
           : "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%)"
       }}
     >
-      {/* Floating particles */}
-      {particles.map((particle) => (
-        <div
-          key={particle.id}
-          className="absolute rounded-full opacity-60"
-          style={{
-            left: `${particle.x}%`,
-            top: `${particle.y}%`,
-            width: `${particle.size}px`,
-            height: `${particle.size}px`,
-            background: theme === "dark" 
-              ? `radial-gradient(circle, rgba(139, 92, 246, 0.8) 0%, rgba(59, 130, 246, 0.4) 100%)`
-              : `radial-gradient(circle, rgba(99, 102, 241, 0.6) 0%, rgba(79, 70, 229, 0.3) 100%)`,
-            animation: `float ${particle.duration}s ease-in-out infinite`,
-            animationDelay: `${particle.delay}s`,
-          }}
-        />
-      ))}
+      {/* 3D Keyboard */}
+      <div className="absolute inset-0">
+        <Suspense fallback={<div className="w-full h-full" />}>
+          <Keyboard3D onSkillHover={setHoveredSkill} />
+        </Suspense>
+      </div>
+
+      {/* Skill info overlay */}
+      {hoveredSkill && (
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none">
+          <div 
+            className="px-6 py-4 rounded-xl backdrop-blur-md shadow-2xl border border-white/10"
+            style={{ 
+              background: theme === "dark" 
+                ? "rgba(26, 26, 46, 0.9)" 
+                : "rgba(255, 255, 255, 0.9)"
+            }}
+          >
+            <h3 
+              className="text-xl font-bold mb-1"
+              style={{ color: hoveredSkill.color }}
+            >
+              {hoveredSkill.label}
+            </h3>
+            <p className={`text-sm max-w-xs ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+              {hoveredSkill.shortDescription}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Gradient orbs */}
       <div 
-        className="absolute w-96 h-96 rounded-full opacity-20 blur-3xl"
+        className="absolute w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
         style={{
           background: theme === "dark" 
             ? "radial-gradient(circle, #8b5cf6 0%, transparent 70%)"
@@ -62,7 +67,7 @@ const AnimatedBackground = () => {
         }}
       />
       <div 
-        className="absolute w-80 h-80 rounded-full opacity-20 blur-3xl"
+        className="absolute w-80 h-80 rounded-full opacity-20 blur-3xl pointer-events-none"
         style={{
           background: theme === "dark" 
             ? "radial-gradient(circle, #3b82f6 0%, transparent 70%)"
@@ -72,35 +77,8 @@ const AnimatedBackground = () => {
           animation: "pulse-slow 10s ease-in-out infinite reverse",
         }}
       />
-      <div 
-        className="absolute w-64 h-64 rounded-full opacity-15 blur-3xl"
-        style={{
-          background: theme === "dark" 
-            ? "radial-gradient(circle, #a855f7 0%, transparent 70%)"
-            : "radial-gradient(circle, #8b5cf6 0%, transparent 70%)",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          animation: "pulse-slow 12s ease-in-out infinite",
-        }}
-      />
 
       <style>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px) translateX(0px);
-          }
-          25% {
-            transform: translateY(-20px) translateX(10px);
-          }
-          50% {
-            transform: translateY(-10px) translateX(-10px);
-          }
-          75% {
-            transform: translateY(-30px) translateX(5px);
-          }
-        }
-        
         @keyframes pulse-slow {
           0%, 100% {
             transform: scale(1);

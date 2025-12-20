@@ -1,600 +1,178 @@
-import React, { Suspense, useEffect, useRef, useState } from "react";
-import { Application, SPEObject, SplineEvent } from "@splinetool/runtime";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-const Spline = React.lazy(() => import("@splinetool/react-spline"));
-import { Skill, SkillNames, SKILLS } from "@/data/constants";
-import { sleep } from "@/lib/utils";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
 import { usePreloader } from "./preloader";
 import { useTheme } from "@/components/theme-provider";
-import SplineErrorBoundary from "./spline-error-boundary";
-
-gsap.registerPlugin(ScrollTrigger);
-
-const STATES = {
-  hero: {
-    desktop: {
-      scale: { x: 0.25, y: 0.25, z: 0.25 },
-      position: { x: 400, y: -200, z: 0 },
-      rotation: { x: 0, y: 0, z: 0 },
-    },
-    mobile: {
-      scale: { x: 0.15, y: 0.15, z: 0.15 },
-      position: { x: 0, y: -200, z: 0 },
-      rotation: { x: 0, y: 0, z: 0 },
-    },
-  },
-  about: {
-    desktop: {
-      scale: { x: 0.4, y: 0.4, z: 0.4 },
-      position: { x: 0, y: -40, z: 0 },
-      rotation: {
-        x: 0,
-        y: Math.PI / 12,
-        z: 0,
-      },
-    },
-    mobile: {
-      scale: { x: 0.2, y: 0.2, z: 0.2 },
-      position: { x: 0, y: -40, z: 0 },
-      rotation: {
-        x: 0,
-        y: Math.PI / 6,
-        z: 0,
-      },
-    },
-  },
-  skills: {
-    desktop: {
-      scale: { x: 0.4, y: 0.4, z: 0.4 },
-      position: { x: 0, y: -40, z: 0 },
-      rotation: {
-        x: 0,
-        y: Math.PI / 12,
-        z: 0,
-      },
-    },
-    mobile: {
-      scale: { x: 0.2, y: 0.2, z: 0.2 },
-      position: { x: 0, y: -40, z: 0 },
-      rotation: {
-        x: 0,
-        y: Math.PI / 6,
-        z: 0,
-      },
-    },
-  },
-  projects: {
-    desktop: {
-      scale: { x: 0.3, y: 0.3, z: 0.3 },
-      position: { x: 0, y: -40, z: 0 },
-      rotation: {
-        x: Math.PI,
-        y: Math.PI / 3,
-        z: Math.PI,
-      },
-    },
-    mobile: {
-      scale: { x: 0.18, y: 0.18, z: 0.18 },
-      position: { x: 0, y: 150, z: 0 },
-      rotation: {
-        x: Math.PI,
-        y: Math.PI / 3,
-        z: Math.PI,
-      },
-    },
-  },
-  contact: {
-    desktop: {
-      scale: { x: 0.3, y: 0.3, z: 0.3 },
-      position: { x: 500, y: -250, z: 0 },
-      rotation: {
-        x: 0,
-        y: 0,
-        z: 0,
-      },
-    },
-    mobile: {
-      scale: { x: 0.18, y: 0.18, z: 0.18 },
-      position: { x: 0, y: 150, z: 0 },
-      rotation: {
-        x: Math.PI,
-        y: Math.PI / 3,
-        z: Math.PI,
-      },
-    },
-  },
-};
-
-type Section = "hero" | "about" | "skills" | "projects" | "contact";
 
 const AnimatedBackground = () => {
-  const { isLoading, bypassLoading } = usePreloader();
+  const { bypassLoading } = usePreloader();
   const { theme } = useTheme();
-  const isMobile = useMediaQuery("(max-width: 768px)");
-  const splineContainer = useRef<HTMLDivElement>(null);
-  const [splineApp, setSplineApp] = useState<Application>();
-  const [splineError, setSplineError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const particlesRef = useRef<THREE.Points | null>(null);
+  const frameRef = useRef<number>(0);
 
-  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
-  const [activeSection, setActiveSection] = useState<Section>("hero");
-  const [bongoAnimation, setBongoAnimation] = useState<{
-    start: () => void;
-    stop: () => void;
-  }>();
-  const [keycapAnimtations, setKeycapAnimtations] = useState<{
-    start: () => void;
-    stop: () => void;
-  }>();
+  useEffect(() => {
+    if (!containerRef.current) return;
 
-  const keyboardStates = (section: Section) => {
-    return STATES[section][isMobile ? "mobile" : "desktop"];
-  };
+    // Scene setup
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
 
-  const handleMouseHover = (e: SplineEvent) => {
-    if (!splineApp || selectedSkill?.name === e.target.name) return;
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.z = 50;
+    cameraRef.current = camera;
 
-    if (e.target.name === "body" || e.target.name === "platform") {
-      setSelectedSkill(null);
-      if (splineApp.getVariable("heading") && splineApp.getVariable("desc")) {
-        splineApp.setVariable("heading", "");
-        splineApp.setVariable("desc", "");
-      }
-    } else {
-      if (!selectedSkill || selectedSkill.name !== e.target.name) {
-        const skill = SKILLS[e.target.name as SkillNames];
-        setSelectedSkill(skill);
-      }
+    // Renderer setup
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true 
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    containerRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    // Create particles
+    const particleCount = 2000;
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount * 3; i += 3) {
+      positions[i] = (Math.random() - 0.5) * 200;
+      positions[i + 1] = (Math.random() - 0.5) * 200;
+      positions[i + 2] = (Math.random() - 0.5) * 200;
+
+      // Purple/blue gradient colors
+      colors[i] = 0.5 + Math.random() * 0.3; // R
+      colors[i + 1] = 0.2 + Math.random() * 0.3; // G
+      colors[i + 2] = 0.8 + Math.random() * 0.2; // B
     }
-  };
 
-  // handle keyboard press interaction
-  useEffect(() => {
-    if (!selectedSkill || !splineApp) return;
-    splineApp.setVariable("heading", selectedSkill.label);
-    splineApp.setVariable("desc", selectedSkill.shortDescription);
-  }, [selectedSkill]);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
-  // handle keyboard heading and desc visibility
-  useEffect(() => {
-    if (!splineApp) return;
-    const textDesktopDark = splineApp.findObjectByName("text-desktop-dark");
-    const textDesktopLight = splineApp.findObjectByName("text-desktop");
-    const textMobileDark = splineApp.findObjectByName("text-mobile-dark");
-    const textMobileLight = splineApp.findObjectByName("text-mobile");
-    if (
-      !textDesktopDark ||
-      !textDesktopLight ||
-      !textMobileDark ||
-      !textMobileLight
-    )
-      return;
-    if (activeSection !== "skills") {
-      textDesktopDark.visible = false;
-      textDesktopLight.visible = false;
-      textMobileDark.visible = false;
-      textMobileLight.visible = false;
-      return;
-    }
-    if (theme === "dark" && !isMobile) {
-      textDesktopDark.visible = false;
-      textDesktopLight.visible = true;
-      textMobileDark.visible = false;
-      textMobileLight.visible = false;
-    } else if (theme === "dark" && isMobile) {
-      textDesktopDark.visible = false;
-      textDesktopLight.visible = false;
-      textMobileDark.visible = false;
-      textMobileLight.visible = true;
-    } else if (theme === "light" && !isMobile) {
-      textDesktopDark.visible = true;
-      textDesktopLight.visible = false;
-      textMobileDark.visible = false;
-      textMobileLight.visible = false;
-    } else {
-      textDesktopDark.visible = false;
-      textDesktopLight.visible = false;
-      textMobileDark.visible = true;
-      textMobileLight.visible = false;
-    }
-  }, [theme, splineApp, isMobile, activeSection]);
+    const material = new THREE.PointsMaterial({
+      size: 0.5,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      sizeAttenuation: true,
+    });
 
-  // initialize gsap animations
-  useEffect(() => {
-    handleSplineInteractions();
-    handleGsapAnimations();
-    setBongoAnimation(getBongoAnimation());
-    setKeycapAnimtations(getKeycapsAnimation());
-  }, [splineApp]);
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+    particlesRef.current = particles;
 
-  useEffect(() => {
-    let rotateKeyboard: gsap.core.Tween;
-    let teardownKeyboard: gsap.core.Tween;
-    (async () => {
-      if (!splineApp) return;
-      const kbd: SPEObject | undefined = splineApp.findObjectByName("keyboard");
-      if (!kbd) return;
-      rotateKeyboard = gsap.to(kbd.rotation, {
-        y: Math.PI * 2 + kbd.rotation.y,
-        duration: 10,
-        repeat: -1,
-        yoyo: true,
-        yoyoEase: true,
-        ease: "back.inOut",
-        delay: 2.5,
+    // Add some floating geometric shapes
+    const shapes: THREE.Mesh[] = [];
+    const shapeGeometries = [
+      new THREE.IcosahedronGeometry(2, 0),
+      new THREE.OctahedronGeometry(2, 0),
+      new THREE.TetrahedronGeometry(2, 0),
+    ];
+
+    for (let i = 0; i < 5; i++) {
+      const geo = shapeGeometries[i % shapeGeometries.length];
+      const mat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color().setHSL(0.7 + Math.random() * 0.2, 0.5, 0.5),
+        wireframe: true,
+        transparent: true,
+        opacity: 0.3,
       });
-      teardownKeyboard = gsap.fromTo(
-        kbd.rotation,
-        {
-          y: 0,
-          // x: -Math.PI,
-          x: -Math.PI,
-          z: 0,
-        },
-        {
-          y: -Math.PI / 2,
-          duration: 5,
-          repeat: -1,
-          yoyo: true,
-          yoyoEase: true,
-          // ease: "none",
-          delay: 2.5,
-          immediateRender: false,
-          paused: true,
-        }
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(
+        (Math.random() - 0.5) * 80,
+        (Math.random() - 0.5) * 80,
+        (Math.random() - 0.5) * 40
       );
-      if (activeSection === "hero") {
-        rotateKeyboard.restart();
-        teardownKeyboard.pause();
-      } else if (activeSection === "contact") {
-        rotateKeyboard.pause();
-      } else {
-        rotateKeyboard.pause();
-        teardownKeyboard.pause();
+      mesh.userData = {
+        rotationSpeed: {
+          x: (Math.random() - 0.5) * 0.01,
+          y: (Math.random() - 0.5) * 0.01,
+        },
+        floatSpeed: Math.random() * 0.5 + 0.5,
+        floatOffset: Math.random() * Math.PI * 2,
+        originalY: mesh.position.y,
+      };
+      scene.add(mesh);
+      shapes.push(mesh);
+    }
+
+    // Animation
+    let time = 0;
+    const animate = () => {
+      time += 0.01;
+      frameRef.current = requestAnimationFrame(animate);
+
+      if (particlesRef.current) {
+        particlesRef.current.rotation.x += 0.0002;
+        particlesRef.current.rotation.y += 0.0003;
       }
-      if (activeSection === "skills") {
-      } else {
-        splineApp.setVariable("heading", "");
-        splineApp.setVariable("desc", "");
-      }
-      if (activeSection === "projects") {
-        await sleep(300);
-        bongoAnimation?.start();
-      } else {
-        await sleep(200);
-        bongoAnimation?.stop();
-      }
-      if (activeSection === "contact") {
-        await sleep(600);
-        teardownKeyboard.restart();
-        keycapAnimtations?.start();
-      } else {
-        await sleep(600);
-        teardownKeyboard.pause();
-        keycapAnimtations?.stop();
-      }
-    })();
+
+      shapes.forEach((shape) => {
+        shape.rotation.x += shape.userData.rotationSpeed.x;
+        shape.rotation.y += shape.userData.rotationSpeed.y;
+        shape.position.y =
+          shape.userData.originalY +
+          Math.sin(time * shape.userData.floatSpeed + shape.userData.floatOffset) * 5;
+      });
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+    bypassLoading();
+
+    // Handle resize
+    const handleResize = () => {
+      if (!cameraRef.current || !rendererRef.current) return;
+      cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      if (rotateKeyboard) rotateKeyboard.kill();
-      if (teardownKeyboard) teardownKeyboard.kill();
-    };
-  }, [activeSection, splineApp]);
-
-  const [keyboardRevealed, setKeyboardRevealed] = useState(false);
-  //reveal keycaps
-  useEffect(() => {
-    const hash = activeSection === "hero" ? "#" : `#${activeSection}`;
-    window.history.replaceState(null, "", "/" + hash);
-    if (!splineApp || isLoading || keyboardRevealed) return;
-    revealKeyCaps();
-  }, [splineApp, isLoading, activeSection]);
-  const revealKeyCaps = async () => {
-    if (!splineApp) return;
-    const kbd = splineApp.findObjectByName("keyboard");
-    if (!kbd) return;
-    kbd.visible = false;
-    await sleep(400);
-    kbd.visible = true;
-    setKeyboardRevealed(true);
-    console.log(activeSection);
-    gsap.fromTo(
-      kbd?.scale,
-      { x: 0.01, y: 0.01, z: 0.01 },
-      {
-        x: keyboardStates(activeSection).scale.x,
-        y: keyboardStates(activeSection).scale.y,
-        z: keyboardStates(activeSection).scale.z,
-        duration: 1.5,
-        ease: "elastic.out(1, 0.6)",
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(frameRef.current);
+      if (rendererRef.current && containerRef.current) {
+        containerRef.current.removeChild(rendererRef.current.domElement);
+        rendererRef.current.dispose();
       }
-    );
-    // }
-
-    const allObjects = splineApp.getAllObjects();
-    const keycaps = allObjects.filter((obj) => obj.name === "keycap");
-    await sleep(900);
-    if (isMobile) {
-      const mobileKeyCaps = allObjects.filter(
-        (obj) => obj.name === "keycap-mobile"
-      );
-      mobileKeyCaps.forEach((keycap, idx) => {
-        keycap.visible = true;
+      geometry.dispose();
+      material.dispose();
+      shapes.forEach((shape) => {
+        (shape.geometry as THREE.BufferGeometry).dispose();
+        (shape.material as THREE.Material).dispose();
       });
-    } else {
-      const desktopKeyCaps = allObjects.filter(
-        (obj) => obj.name === "keycap-desktop"
-      );
-      desktopKeyCaps.forEach(async (keycap, idx) => {
-        await sleep(idx * 70);
-        keycap.visible = true;
-      });
-    }
-    keycaps.forEach(async (keycap, idx) => {
-      keycap.visible = false;
-      await sleep(idx * 70);
-      keycap.visible = true;
-      gsap.fromTo(
-        keycap.position,
-        { y: 200 },
-        { y: 50, duration: 0.5, delay: 0.1, ease: "bounce.out" }
-      );
-    });
-  };
-  const handleSplineInteractions = () => {
-    if (!splineApp) return;
-    splineApp.addEventListener("keyUp", (e) => {
-      if (!splineApp) return;
-      splineApp.setVariable("heading", "");
-      splineApp.setVariable("desc", "");
-    });
-    splineApp.addEventListener("keyDown", (e) => {
-      if (!splineApp) return;
-      const skill = SKILLS[e.target.name as SkillNames];
-      if (skill) setSelectedSkill(skill);
-      splineApp.setVariable("heading", skill.label);
-      splineApp.setVariable("desc", skill.shortDescription);
-    });
-    splineApp.addEventListener("mouseHover", handleMouseHover);
-  };
-  const handleGsapAnimations = () => {
-    if (!splineApp) return;
-    const kbd: SPEObject | undefined = splineApp.findObjectByName("keyboard");
-    if (!kbd || !splineContainer.current) return;
-    gsap.set(kbd.scale, {
-      ...keyboardStates("hero").scale,
-    });
-    gsap.set(kbd.position, {
-      ...keyboardStates("hero").position,
-    });
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: "#skills",
-        start: "top 50%",
-        end: "bottom bottom",
-        scrub: true,
-        // markers: true,
-        onEnter: () => {
-          setActiveSection("skills");
-          gsap.to(kbd.scale, {
-            ...keyboardStates("skills").scale,
-            duration: 1,
-          });
-          gsap.to(kbd.position, {
-            ...keyboardStates("skills").position,
-            duration: 1,
-          });
-          gsap.to(kbd.rotation, {
-            ...keyboardStates("skills").rotation,
-            duration: 1,
-          });
-        },
-        onLeaveBack: () => {
-          setActiveSection("hero");
-          gsap.to(kbd.scale, { ...keyboardStates("hero").scale, duration: 1 });
-          gsap.to(kbd.position, {
-            ...keyboardStates("hero").position,
-            duration: 1,
-          });
-          gsap.to(kbd.rotation, {
-            ...keyboardStates("hero").rotation,
-            duration: 1,
-          });
-          // gsap.to(kbd.rotation, { x: 0, duration: 1 });
-        },
-      },
-    });
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: "#projects",
-        start: "top 70%",
-        end: "bottom bottom",
-        scrub: true,
-        // markers: true,
-        onEnter: () => {
-          setActiveSection("projects");
-          gsap.to(kbd.scale, {
-            ...keyboardStates("projects").scale,
-            duration: 1,
-          });
-          gsap.to(kbd.position, {
-            ...keyboardStates("projects").position,
-            duration: 1,
-          });
-          gsap.to(kbd.rotation, {
-            ...keyboardStates("projects").rotation,
-            duration: 1,
-          });
-        },
-        onLeaveBack: () => {
-          setActiveSection("skills");
-          gsap.to(kbd.scale, {
-            ...keyboardStates("skills").scale,
-            duration: 1,
-          });
-          gsap.to(kbd.position, {
-            ...keyboardStates("skills").position,
-            duration: 1,
-          });
-          gsap.to(kbd.rotation, {
-            ...keyboardStates("skills").rotation,
-            duration: 1,
-          });
-          // gsap.to(kbd.rotation, { x: 0, duration: 1 });
-        },
-      },
-    });
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: "#contact",
-        start: "top 30%",
-        end: "bottom bottom",
-        scrub: true,
-        // markers: true,
-        onEnter: () => {
-          setActiveSection("contact");
-          gsap.to(kbd.scale, {
-            ...keyboardStates("contact").scale,
-            duration: 1,
-          });
-          gsap.to(kbd.position, {
-            ...keyboardStates("contact").position,
-            duration: 1,
-          });
-          gsap.to(kbd.rotation, {
-            ...keyboardStates("contact").rotation,
-            duration: 1,
-          });
-        },
-        onLeaveBack: () => {
-          setActiveSection("projects");
-          gsap.to(kbd.scale, {
-            ...keyboardStates("projects").scale,
-            duration: 1,
-          });
-          gsap.to(kbd.position, {
-            ...keyboardStates("projects").position,
-            duration: 1,
-          });
-          gsap.to(kbd.rotation, {
-            ...keyboardStates("projects").rotation,
-            duration: 1,
-          });
-          // gsap.to(kbd.rotation, { x: 0, duration: 1 });
-        },
-      },
-    });
-  };
-  const getBongoAnimation = () => {
-    const framesParent = splineApp?.findObjectByName("bongo-cat");
-    const frame1 = splineApp?.findObjectByName("frame-1");
-    const frame2 = splineApp?.findObjectByName("frame-2");
-    if (!frame1 || !frame2 || !framesParent)
-      return { start: () => {}, stop: () => {} };
+    };
+  }, [bypassLoading]);
 
-    let interval: NodeJS.Timeout;
-    const start = () => {
-      let i = 0;
-      framesParent.visible = true;
-      interval = setInterval(() => {
-        if (i % 2) {
-          frame1.visible = false;
-          frame2.visible = true;
-        } else {
-          frame1.visible = true;
-          frame2.visible = false;
-        }
-        i++;
-      }, 100);
-    };
-    const stop = () => {
-      clearInterval(interval);
-      framesParent.visible = false;
-      frame1.visible = false;
-      frame2.visible = false;
-    };
-    return { start, stop };
-  };
-  const getKeycapsAnimation = () => {
-    if (!splineApp) return { start: () => {}, stop: () => {} };
-
-    let tweens: gsap.core.Tween[] = [];
-    const start = () => {
-      removePrevTweens();
-      Object.values(SKILLS)
-        .sort(() => Math.random() - 0.5)
-        .forEach((skill, idx) => {
-          const keycap = splineApp.findObjectByName(skill.name);
-          if (!keycap) return;
-          const t = gsap.to(keycap?.position, {
-            y: Math.random() * 200 + 200,
-            duration: Math.random() * 2 + 2,
-            delay: idx * 0.6,
-            repeat: -1,
-            yoyo: true,
-            yoyoEase: "none",
-            ease: "elastic.out(1,0.3)",
-          });
-          tweens.push(t);
-        });
-    };
-    const stop = () => {
-      removePrevTweens();
-      Object.values(SKILLS).forEach((skill) => {
-        const keycap = splineApp.findObjectByName(skill.name);
-        if (!keycap) return;
-        const t = gsap.to(keycap?.position, {
-          y: 0,
-          duration: 4,
-          repeat: 1,
-          ease: "elastic.out(1,0.8)",
-        });
-        tweens.push(t);
-      });
-      setTimeout(removePrevTweens, 1000);
-    };
-    const removePrevTweens = () => {
-      tweens.forEach((t) => t.kill());
-    };
-    return { start, stop };
-  };
-  // Handle spline load error gracefully
+  // Update background based on theme
   useEffect(() => {
-    if (splineError) {
-      bypassLoading();
+    if (sceneRef.current) {
+      sceneRef.current.background = theme === "dark" 
+        ? new THREE.Color(0x0a0a0f)
+        : new THREE.Color(0xf1f5f9);
     }
-  }, [splineError, bypassLoading]);
-
-  if (splineError) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="text-center text-white/50">
-          <p className="text-sm">3D Background unavailable</p>
-        </div>
-      </div>
-    );
-  }
-
-  const fallbackUI = (
-    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
-  );
+  }, [theme]);
 
   return (
-    <SplineErrorBoundary 
-      fallback={fallbackUI}
-      onError={() => setSplineError(true)}
-    >
-      <Suspense fallback={fallbackUI}>
-        <Spline
-          ref={splineContainer}
-          onLoad={(app: Application) => {
-            setSplineApp(app);
-            bypassLoading();
-          }}
-          scene="/assets/skills-keyboard.spline"
-        />
-      </Suspense>
-    </SplineErrorBoundary>
+    <div 
+      ref={containerRef} 
+      className="w-full h-full"
+      style={{ background: theme === "dark" ? "#0a0a0f" : "#f1f5f9" }}
+    />
   );
 };
 

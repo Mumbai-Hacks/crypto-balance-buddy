@@ -8,16 +8,12 @@ const PROJECTS = [
   {
     id: 1,
     name: "SignSpeak",
-    description: `Dive into CodingDucks, a fusion of CodePen's creative playground with LeetCode's problem-solving realm.
-Whether you're a newbie or a seasoned coder, join the community to paddle through coding adventures and let your
-creativity soar.`,
-    link: "https://www.codingducks.live",
+    description: `SignSpeak is an advanced cross-platform ASL recognition platform bridging communication between the Deaf community and technology. It leverages MediaPipe hand tracking, CNN-based classification, and YOLOv5 detection for real-time sign recognition at 30+ FPS.`,
+    link: "https://github.com/Raahil-08/SignSpeak",
     images: [
-      "/assets/projects-screenshots/codingducks/1.png",
-      "/assets/projects-screenshots/codingducks/2.png",
-      "/assets/projects-screenshots/codingducks/3.png",
-      "/assets/projects-screenshots/codingducks/4.png",
-      "/assets/projects-screenshots/codingducks/5.png",
+      "/assets/projects-screenshots/signspeak/1.png",
+      "/assets/projects-screenshots/signspeak/2.png",
+      "/assets/projects-screenshots/signspeak/3.png",
     ],
   },
   {

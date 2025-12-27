@@ -14,11 +14,11 @@ Whether you're a newbie or a seasoned coder, join the community to paddle throug
 creativity soar.`,
     link: "https://www.codingducks.live",
     images: [
-      "/assets/projects-screenshots/codingducks/1.png",
-      "/assets/projects-screenshots/codingducks/2.png",
-      "/assets/projects-screenshots/codingducks/3.png",
-      "/assets/projects-screenshots/codingducks/4.png",
-      "/assets/projects-screenshots/codingducks/5.png",
+      "/assets/projects-screenshots/signspeak/1.png",
+      "/assets/projects-screenshots/signspeak/2.png",
+      "/assets/projects-screenshots/signspeak/3.png",
+      "/assets/projects-screenshots/signspeak/4.png",
+      "/assets/projects-screenshots/signspeak/5.png",
     ],
   },
   {

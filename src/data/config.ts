@@ -25,7 +25,7 @@ const config = {
   ],
   author: "Raahil Desai",
   email: "raahildesai8@gmail.com",
-  site: "https://nareshkhatri.site",
+  site: "https://raahil-portfolio.vercel.app/#",
 
   get ogImg() {
     return this.site + "/assets/seo/og-image.png";
